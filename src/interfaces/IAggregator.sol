@@ -6,6 +6,7 @@ pragma solidity ^0.8.13;
  * `kind` defines type of data source. If equals to 0, then Data Source was never registered.
  *      1 - MerkleRoot
  *      2 - ERC721 contract
+ *      3 - EIP712 proof
  * `timestamp` indicates when the `payload` was generated
  * `payload` can be MerkleRoot or ERC721 contract address
  */
@@ -30,6 +31,7 @@ error DataSourceUnknown();
 error DataSourceWrongKind();
 error SignerNotAuthorized();
 error ProofInvalid();
+error DataOutdated();
 
 interface IAggregator {
     event SourceAdded(uint256 indexed sourceId, uint40 timestamp, uint32 kind, uint256 payload);
@@ -52,6 +54,8 @@ interface IAggregator {
     ) external;
 
     function sync(uint256 sourceId, address account, uint256 payload, bytes32[] calldata merkleProof) external;
+
+    function syncVC(uint256 sourceId, address account, uint256 payload, uint40 timestamp, bytes calldata signature) external;
 
     function isSynced(uint256 sourceId, address account) external view returns (Sync memory);
 }
